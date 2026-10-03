@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yeast Converter: Instant, Active Dry & Fresh Yeast | CrumbMetric</title>
+<meta name="description" content="Convert between instant yeast, active dry yeast, and fresh (cake) yeast by weight. Quick substitution calculator for baking.">
+<link rel="canonical" href="https://www.crumbmetric.com/tools/yeast-converter.html">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="../index.html">Crumb<span>Metric</span></a>
+    <nav class="site"><a href="../index.html">All tools</a></nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <h1>Yeast converter</h1>
+    <p class="lead">Recipe calls for a type of yeast you don't have? Convert between instant, active dry, and fresh (cake) yeast by weight.</p>
+
+    <div class="card">
+      <label for="amount">Amount (grams)</label>
+      <input type="number" id="amount" value="7" step="any">
+
+      <label for="fromType">I have this type:</label>
+      <select id="fromType">
+        <option value="instant">Instant yeast</option>
+        <option value="activeDry">Active dry yeast</option>
+        <option value="fresh">Fresh (cake) yeast</option>
+      </select>
+
+      <button onclick="convert()">Convert</button>
+      <div class="result" id="result"></div>
+      <p class="note">Ratios are commonly cited baking guides, not exact science — brands vary. As a rule of thumb: 1 part instant &asymp; 1.33 parts active dry &asymp; 2.9 parts fresh yeast, by weight. If substituting active dry for instant, dissolve it in warm water first and allow a bit more rising time.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">&copy; 2026 CrumbMetric. Conversions are approximate guides for home baking.</div>
+</footer>
+
+<script>
+const factorToInstant = { instant: 1, activeDry: 0.75, fresh: 0.34 };
+
+function fmt(n) { return Math.round(n * 100) / 100; }
+
+function convert() {
+  const amount = parseFloat(document.getElementById('amount').value);
+  const fromType = document.getElementById('fromType').value;
+  const out = document.getElementById('result');
+  if (isNaN(amount)) { out.textContent = 'Enter an amount.'; return; }
+
+  const instantEquiv = amount * factorToInstant[fromType];
+  const instant = instantEquiv / factorToInstant.instant;
+  const activeDry = instantEquiv / factorToInstant.activeDry;
+  const fresh = instantEquiv / factorToInstant.fresh;
+
+  out.innerHTML =
+    `Instant: ${fmt(instant)} g &middot; Active dry: ${fmt(activeDry)} g &middot; Fresh: ${fmt(fresh)} g`;
+}
+
+convert();
+</script>
+</body>
+</html>

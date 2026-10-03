@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baking Pan Size Converter & Substitute Finder | CrumbMetric</title>
+<meta name="description" content="Find a substitute baking pan with the same area as the one your recipe calls for. Converts round, square, rectangular, and loaf pans.">
+<link rel="canonical" href="https://www.crumbmetric.com/tools/pan-size-converter.html">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="../index.html">Crumb<span>Metric</span></a>
+    <nav class="site"><a href="../index.html">All tools</a></nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <h1>Pan size converter</h1>
+    <p class="lead">Don't have the pan your recipe calls for? Find the closest substitute by baking area.</p>
+
+    <div class="card">
+      <label for="shape">Pan shape</label>
+      <select id="shape" onchange="toggleDims()">
+        <option value="round">Round</option>
+        <option value="square">Square</option>
+        <option value="rect">Rectangular</option>
+      </select>
+
+      <div class="row">
+        <div>
+          <label id="dim1Label" for="dim1">Diameter (in)</label>
+          <input type="number" id="dim1" value="9" step="any">
+        </div>
+        <div id="dim2Wrap" style="display:none">
+          <label id="dim2Label" for="dim2">Width (in)</label>
+          <input type="number" id="dim2" value="9" step="any">
+        </div>
+      </div>
+
+      <button onclick="findSubstitute()">Find substitutes</button>
+      <div class="result" id="result"></div>
+
+      <table id="panTable" style="display:none">
+        <tr><th>Pan</th><th>Area (sq in)</th><th>Difference</th></tr>
+      </table>
+      <p class="note">Pans within about 10% baking area are usually safe substitutes — just watch the bake time, since a shallower/wider pan bakes faster.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">&copy; 2026 CrumbMetric.</div>
+</footer>
+
+<script>
+const pans = [
+  { label: '6 in round', area: Math.PI * 3 * 3 },
+  { label: '8 in round', area: Math.PI * 4 * 4 },
+  { label: '9 in round', area: Math.PI * 4.5 * 4.5 },
+  { label: '10 in round', area: Math.PI * 5 * 5 },
+  { label: '12 in round', area: Math.PI * 6 * 6 },
+  { label: '8 x 8 in square', area: 64 },
+  { label: '9 x 9 in square', area: 81 },
+  { label: '9 x 13 in rectangular', area: 117 },
+  { label: '11 x 7 in rectangular', area: 77 },
+  { label: '8 x 4 in loaf', area: 32 },
+  { label: '9 x 5 in loaf', area: 45 }
+];
+
+function toggleDims() {
+  const shape = document.getElementById('shape').value;
+  const dim1Label = document.getElementById('dim1Label');
+  const dim2Wrap = document.getElementById('dim2Wrap');
+  const dim2Label = document.getElementById('dim2Label');
+
+  if (shape === 'round') {
+    dim1Label.textContent = 'Diameter (in)';
+    dim2Wrap.style.display = 'none';
+  } else if (shape === 'square') {
+    dim1Label.textContent = 'Side length (in)';
+    dim2Wrap.style.display = 'none';
+  } else {
+    dim1Label.textContent = 'Length (in)';
+    dim2Label.textContent = 'Width (in)';
+    dim2Wrap.style.display = '';
+  }
+}
+
+function fmt(n) { return Math.round(n * 10) / 10; }
+
+function findSubstitute() {
+  const shape = document.getElementById('shape').value;
+  const dim1 = parseFloat(document.getElementById('dim1').value);
+  const dim2 = parseFloat(document.getElementById('dim2').value);
+  const out = document.getElementById('result');
+  const tableEl = document.getElementById('panTable');
+
+  let area;
+  if (shape === 'round') {
+    if (isNaN(dim1)) { out.textContent = 'Enter a diameter.'; return; }
+    area = Math.PI * (dim1 / 2) * (dim1 / 2);
+  } else if (shape === 'square') {
+    if (isNaN(dim1)) { out.textContent = 'Enter a side length.'; return; }
+    area = dim1 * dim1;
+  } else {
+    if (isNaN(dim1) || isNaN(dim2)) { out.textContent = 'Enter length and width.'; return; }
+    area = dim1 * dim2;
+  }
+
+  out.innerHTML = `Your pan's area: <strong>${fmt(area)} sq in</strong>. Closest substitutes below.`;
+
+  const sorted = pans
+    .map(p => ({ ...p, diff: Math.abs(p.area - area) }))
+    .sort((a, b) => a.diff - b.diff);
+
+  tableEl.innerHTML = '<tr><th>Pan</th><th>Area (sq in)</th><th>Difference</th></tr>';
+  sorted.forEach((p, i) => {
+    const tr = document.createElement('tr');
+    if (i < 2) tr.className = 'match';
+    tr.innerHTML = `<td>${p.label}</td><td>${fmt(p.area)}</td><td>${fmt(p.diff)}</td>`;
+    tableEl.appendChild(tr);
+  });
+  tableEl.style.display = '';
+}
+
+toggleDims();
+findSubstitute();
+</script>
+</body>
+</html>

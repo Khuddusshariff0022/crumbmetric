@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cup to Grams Converter by Ingredient | CrumbMetric</title>
+<meta name="description" content="Convert cups to grams (and back) for flour, sugar, cocoa powder, oats, honey and more. Accurate ingredient-specific baking conversions.">
+<link rel="canonical" href="https://www.crumbmetric.com/tools/cup-to-grams-converter.html">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="../index.html">Crumb<span>Metric</span></a>
+    <nav class="site"><a href="../index.html">All tools</a></nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <h1>Cup to grams converter</h1>
+    <p class="lead">Different ingredients weigh different amounts per cup. Pick an ingredient for an accurate conversion.</p>
+
+    <div class="card">
+      <label for="ingredient">Ingredient</label>
+      <select id="ingredient"></select>
+
+      <label for="amount">Amount</label>
+      <div class="row">
+        <div><input type="number" id="amount" value="1" step="any"></div>
+        <div>
+          <select id="unit">
+            <option value="cup">Cups</option>
+            <option value="g">Grams</option>
+          </select>
+        </div>
+      </div>
+
+      <button onclick="convert()">Convert</button>
+      <div class="result" id="result"></div>
+      <p class="note">Weights are for standard US cups and typical ingredient density (e.g. flour spooned & leveled, brown sugar packed). Real-world weight can vary a little by brand and technique.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">&copy; 2026 CrumbMetric. Conversions are approximate guides for home baking.</div>
+</footer>
+
+<script>
+const ingredients = [
+  ['flour', 'All-purpose flour', 120],
+  ['sugar', 'Granulated sugar', 200],
+  ['brownSugar', 'Brown sugar (packed)', 220],
+  ['powderedSugar', 'Powdered / icing sugar', 120],
+  ['cocoa', 'Cocoa powder', 90],
+  ['oats', 'Rolled oats', 90],
+  ['rice', 'Rice, uncooked', 185],
+  ['honey', 'Honey', 340],
+  ['milk', 'Milk', 245],
+  ['water', 'Water', 240],
+  ['oil', 'Vegetable oil', 218],
+  ['cornstarch', 'Cornstarch', 120]
+];
+
+const select = document.getElementById('ingredient');
+for (const [key, label] of ingredients) {
+  const opt = document.createElement('option');
+  opt.value = key;
+  opt.textContent = label;
+  select.appendChild(opt);
+}
+
+function gramsPerCup(key) {
+  return ingredients.find(i => i[0] === key)[2];
+}
+
+function fmt(n) { return Math.round(n * 10) / 10; }
+
+function convert() {
+  const key = select.value;
+  const amount = parseFloat(document.getElementById('amount').value);
+  const unit = document.getElementById('unit').value;
+  const out = document.getElementById('result');
+  if (isNaN(amount)) { out.textContent = 'Enter an amount.'; return; }
+
+  const gpc = gramsPerCup(key);
+  const grams = unit === 'cup' ? amount * gpc : amount;
+  const cups = grams / gpc;
+  const label = ingredients.find(i => i[0] === key)[1];
+
+  out.innerHTML = `${fmt(cups)} cup(s) of ${label} &asymp; ${fmt(grams)} g`;
+}
+
+convert();
+</script>
+</body>
+</html>

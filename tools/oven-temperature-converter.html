@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oven Temperature Converter: Celsius, Fahrenheit, Gas Mark & Fan Oven | CrumbMetric</title>
+<meta name="description" content="Convert oven temperatures between Celsius, Fahrenheit, and Gas Mark, plus adjust between fan (convection) and conventional ovens.">
+<link rel="canonical" href="https://www.crumbmetric.com/tools/oven-temperature-converter.html">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="../index.html">Crumb<span>Metric</span></a>
+    <nav class="site"><a href="../index.html">All tools</a></nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <h1>Oven temperature converter</h1>
+    <p class="lead">Convert between Celsius, Fahrenheit, and Gas Mark — and see the adjusted setting if your oven is fan (convection) instead of conventional.</p>
+
+    <div class="card">
+      <label for="temp">Temperature</label>
+      <div class="row">
+        <div>
+          <input type="number" id="temp" value="180" step="1">
+        </div>
+        <div>
+          <select id="unit">
+            <option value="C">Celsius (&deg;C)</option>
+            <option value="F">Fahrenheit (&deg;F)</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="ovenType">This temperature is for a:</label>
+      <select id="ovenType">
+        <option value="conventional">Conventional (regular/static) oven</option>
+        <option value="fan">Fan (convection) oven</option>
+      </select>
+
+      <button onclick="convert()">Convert</button>
+      <div class="result" id="result"></div>
+      <p class="note">Rule of thumb: a fan oven runs about 20&deg;C (≈25&deg;F) hotter than a conventional oven at the same dial setting, so fan ovens are usually set lower. Always check your oven's manual if it differs.</p>
+    </div>
+
+    <h2>Gas mark reference</h2>
+    <table>
+      <tr><th>Gas mark</th><th>&deg;C (conventional)</th><th>&deg;F (conventional)</th></tr>
+      <tr><td>&frac14;</td><td>110</td><td>225</td></tr>
+      <tr><td>&frac12;</td><td>120</td><td>250</td></tr>
+      <tr><td>1</td><td>140</td><td>275</td></tr>
+      <tr><td>2</td><td>150</td><td>300</td></tr>
+      <tr><td>3</td><td>160</td><td>325</td></tr>
+      <tr><td>4</td><td>180</td><td>350</td></tr>
+      <tr><td>5</td><td>190</td><td>375</td></tr>
+      <tr><td>6</td><td>200</td><td>400</td></tr>
+      <tr><td>7</td><td>220</td><td>425</td></tr>
+      <tr><td>8</td><td>230</td><td>450</td></tr>
+      <tr><td>9</td><td>240</td><td>475</td></tr>
+    </table>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">&copy; 2026 CrumbMetric. Conversions are approximate guides for home baking.</div>
+</footer>
+
+<script>
+const gasTable = [
+  [0.25,110,225],[0.5,120,250],[1,140,275],[2,150,300],[3,160,325],
+  [4,180,350],[5,190,375],[6,200,400],[7,220,425],[8,230,450],[9,240,475]
+];
+
+function nearestGasMark(celsius) {
+  let best = gasTable[0];
+  let bestDiff = Math.abs(gasTable[0][1] - celsius);
+  for (const row of gasTable) {
+    const diff = Math.abs(row[1] - celsius);
+    if (diff < bestDiff) { best = row; bestDiff = diff; }
+  }
+  return best[0];
+}
+
+function fmt(n) { return Math.round(n * 10) / 10; }
+
+function convert() {
+  const raw = parseFloat(document.getElementById('temp').value);
+  const unit = document.getElementById('unit').value;
+  const ovenType = document.getElementById('ovenType').value;
+  const out = document.getElementById('result');
+
+  if (isNaN(raw)) { out.textContent = 'Enter a temperature.'; return; }
+
+  const celsius = unit === 'F' ? (raw - 32) * 5 / 9 : raw;
+  const fahrenheit = unit === 'C' ? raw * 9 / 5 + 32 : raw;
+
+  const otherType = ovenType === 'conventional' ? 'fan' : 'conventional';
+  const otherCelsius = ovenType === 'conventional' ? celsius - 20 : celsius + 20;
+  const otherFahrenheit = otherCelsius * 9 / 5 + 32;
+
+  const mark = nearestGasMark(celsius);
+
+  out.innerHTML =
+    `${fmt(celsius)}&deg;C / ${fmt(fahrenheit)}&deg;F / Gas mark ${mark} (${ovenType})<br>` +
+    `If using a ${otherType} oven instead: ${fmt(otherCelsius)}&deg;C / ${fmt(otherFahrenheit)}&deg;F`;
+}
+
+convert();
+</script>
+</body>
+</html>

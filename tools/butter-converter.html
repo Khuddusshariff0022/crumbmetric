@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Butter Converter: Sticks, Cups, Tablespoons & Grams | CrumbMetric</title>
+<meta name="description" content="Convert butter between sticks, cups, tablespoons, grams, and ounces instantly. Simple, accurate baking conversion tool.">
+<link rel="canonical" href="https://www.crumbmetric.com/tools/butter-converter.html">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="../index.html">Crumb<span>Metric</span></a>
+    <nav class="site"><a href="../index.html">All tools</a></nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <h1>Butter converter</h1>
+    <p class="lead">Convert butter between sticks, cups, tablespoons, grams, and ounces.</p>
+
+    <div class="card">
+      <label for="amount">Amount</label>
+      <div class="row">
+        <div><input type="number" id="amount" value="1" step="any"></div>
+        <div>
+          <select id="unit">
+            <option value="stick">Stick(s)</option>
+            <option value="cup">Cup(s)</option>
+            <option value="tbsp">Tablespoon(s)</option>
+            <option value="oz">Ounce(s)</option>
+            <option value="g">Gram(s)</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="convert()">Convert</button>
+      <div class="result" id="result"></div>
+      <p class="note">Based on standard US butter sticks: 1 stick = 1/2 cup = 8 tbsp = 113 g = 4 oz.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">&copy; 2026 CrumbMetric. Conversions are approximate guides for home baking.</div>
+</footer>
+
+<script>
+const gramsPer = { stick: 113, cup: 227, tbsp: 14.2, oz: 28.35, g: 1 };
+
+function fmt(n) {
+  const r = Math.round(n * 100) / 100;
+  return r;
+}
+
+function convert() {
+  const amount = parseFloat(document.getElementById('amount').value);
+  const unit = document.getElementById('unit').value;
+  const out = document.getElementById('result');
+  if (isNaN(amount)) { out.textContent = 'Enter an amount.'; return; }
+
+  const grams = amount * gramsPer[unit];
+
+  out.innerHTML =
+    `${fmt(grams / gramsPer.stick)} stick(s) &middot; ` +
+    `${fmt(grams / gramsPer.cup)} cup(s) &middot; ` +
+    `${fmt(grams / gramsPer.tbsp)} tbsp &middot; ` +
+    `${fmt(grams / gramsPer.oz)} oz &middot; ` +
+    `${fmt(grams)} g`;
+}
+
+convert();
+</script>
+</body>
+</html>

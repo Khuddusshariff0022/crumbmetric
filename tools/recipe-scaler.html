@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recipe Scaler: Resize Any Recipe to a New Serving Size | CrumbMetric</title>
+<meta name="description" content="Scale any recipe up or down to a new number of servings. Enter your ingredients once and get every amount recalculated instantly.">
+<link rel="canonical" href="https://www.crumbmetric.com/tools/recipe-scaler.html">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="../index.html">Crumb<span>Metric</span></a>
+    <nav class="site"><a href="../index.html">All tools</a></nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <h1>Recipe scaler</h1>
+    <p class="lead">Enter your recipe's ingredients once, then resize the whole thing to any number of servings.</p>
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <label for="originalServings">Original servings</label>
+          <input type="number" id="originalServings" value="4" step="any">
+        </div>
+        <div>
+          <label for="targetServings">New servings</label>
+          <input type="number" id="targetServings" value="6" step="any">
+        </div>
+      </div>
+
+      <label>Ingredients</label>
+      <div id="ingredientList"></div>
+      <button class="ghost" onclick="addRow()">+ Add ingredient</button>
+      <button onclick="scaleRecipe()">Scale recipe</button>
+
+      <div class="result" id="result"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">&copy; 2026 CrumbMetric.</div>
+</footer>
+
+<script>
+const list = document.getElementById('ingredientList');
+
+function addRow(amount, name) {
+  const row = document.createElement('div');
+  row.className = 'ingredient-row';
+  row.innerHTML = `
+    <input type="number" class="ing-amount" placeholder="Amount" step="any" value="${amount ?? ''}">
+    <input type="text" class="ing-name" placeholder="e.g. cups flour, or tsp salt" value="${name ?? ''}">
+    <button class="ghost" onclick="this.parentElement.remove()">Remove</button>
+  `;
+  list.appendChild(row);
+}
+
+// starter rows
+addRow(2, 'cups flour');
+addRow(1, 'cup sugar');
+addRow(0.5, 'tsp salt');
+
+function fmt(n) {
+  const r = Math.round(n * 1000) / 1000;
+  return r;
+}
+
+function scaleRecipe() {
+  const original = parseFloat(document.getElementById('originalServings').value);
+  const target = parseFloat(document.getElementById('targetServings').value);
+  const out = document.getElementById('result');
+
+  if (isNaN(original) || isNaN(target) || original <= 0) {
+    out.textContent = 'Enter valid serving sizes.';
+    return;
+  }
+
+  const factor = target / original;
+  const rows = list.querySelectorAll('.ingredient-row');
+  let lines = [];
+
+  rows.forEach(row => {
+    const amount = parseFloat(row.querySelector('.ing-amount').value);
+    const name = row.querySelector('.ing-name').value.trim();
+    if (!isNaN(amount) && name) {
+      lines.push(`${fmt(amount * factor)} ${name}`);
+    }
+  });
+
+  out.innerHTML = lines.length
+    ? lines.join('<br>')
+    : 'Add at least one ingredient with an amount and a name.';
+}
+
+scaleRecipe();
+</script>
+</body>
+</html>
