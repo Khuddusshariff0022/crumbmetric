@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.crumbmetric.com/sitemap.xml
+Sitemap: https://khuddusshariff0022.github.io/crumbmetric/sitemap.xml
